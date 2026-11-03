@@ -1,163 +1,258 @@
-# Clinic Website with AI Assistant
+# WELL Care Clinic Website & AI Assistant
 
-A clean, production-ready one-page clinic website featuring an intelligent, safety-first AI chat assistant and an automated appointment booking request workflow.
-
-The assistant answers patient FAQs regarding hours, location, available healthcare services, and visit preparation strictly using facts from `data/clinic_info.md`. It rejects requests for medical advice or diagnosis and detects emergencies instantly using deterministic rules that bypass the LLM.
+A production-ready, safety-first web application for primary care clinics. Combines a modern responsive frontend with a FastAPI backend featuring dual-mode AI assistance (OpenAI Structured Outputs + Autonomous Tool-Calling Agent), an automated appointment booking system with thread-safe CSV persistence, and an animated medical team showcase.
 
 ---
 
-## Architecture
+## Architecture Overview
 
-The system coordinates a vanilla HTML5/CSS/JavaScript client with a FastAPI backend that queries OpenAI using structured JSON outputs and updates a thread-safe CSV data store.
+The system coordinates a vanilla HTML5/CSS3/JavaScript client with a modular FastAPI service layer, autonomous tool-calling capabilities, and deterministic safety filters.
 
 ```mermaid
 flowchart TD
-    User["Patient / Browser (web/index.html, app.js)"]
-    
-    subgraph FastAPI_Backend ["FastAPI Server (app/main.py)"]
-        Router["API Router (/api/chat, /api/bookings, /api/config)"]
-        RateLimiter["IP Rate Limiter (20 req/min)"]
-        Safety["Safety Guard (app/safety.py)"]
-        LLM["LLM Module (app/llm.py)"]
-        Bookings["Booking Engine (app/bookings.py)"]
+    subgraph Client ["Frontend Layer (Browser)"]
+        UI["Clinic Website (web/index.html, styles.css)"]
+        ChatUI["AI Assistant Widget"]
+        ModalUI["Create Appointment Modal"]
+        CarouselUI["Doctors Marquee Carousel"]
     end
 
-    OpenAI["OpenAI API (gpt-4o-mini, Structured Outputs)"]
-    ClinicInfo["data/clinic_info.md (Single Source of Truth)"]
-    BookingsCSV["data/bookings.csv (Thread-Safe CSV Store)"]
+    subgraph Backend ["FastAPI Application (app/main.py)"]
+        Router["API Gateway & Router"]
+        RateLimiter["IP Rate Limiter (20 req/min)"]
+        SafetyGuard["Deterministic Emergency Guard (app/safety.py)"]
+        
+        subgraph AgentLayer ["AI & Agent Layer (app/llm.py)"]
+            OpenAIClient["OpenAI Engine (gpt-4o-mini)"]
+            LocalAgent["Autonomous Tool-Calling Agent"]
+        end
 
-    User -->|"POST /api/chat"| Router
-    User -->|"POST /api/bookings"| Router
-    User -->|"GET /api/config"| Router
+        subgraph ToolLayer ["Agent Tooling (app/tools.py)"]
+            T_Info["get_clinic_info()"]
+            T_Status["check_booking_status()"]
+            T_Update["update_booking_status()"]
+            T_Book["book_appointment_tool()"]
+            T_Dates["get_available_dates_tool()"]
+        end
 
+        subgraph BookingEngine ["Booking Engine (app/bookings.py)"]
+            Validator["Input Validation & Rules"]
+            CapacityMgr["Capacity & Duplicate Checker"]
+            LockMgr["Thread-Safe Mutex Lock (csv_lock)"]
+        end
+    end
+
+    subgraph Storage ["Data Layer"]
+        ClinicFacts[("data/clinic_info.md<br/>Single Source of Truth")]
+        BookingsCSV[("data/bookings.csv<br/>Thread-Safe Data Store")]
+    end
+
+    %% Client Interactions
+    UI -->|"Request appointment click"| ModalUI
+    ChatUI -->|"POST /api/chat"| Router
+    ModalUI -->|"POST /api/bookings"| Router
+    UI -->|"GET /api/config"| Router
+
+    %% Backend Flow
     Router --> RateLimiter
-    RateLimiter --> Safety
+    RateLimiter --> SafetyGuard
+    SafetyGuard -->|"Critical emergency keyword"| ChatUI
+    SafetyGuard -->|"Normal query"| AgentLayer
 
-    Safety -->|"Emergency detected (Bypass LLM)"| User
-    Safety -->|"Normal query"| LLM
+    %% Agent & Tool Flow
+    AgentLayer -->|"OpenAI API with Structured Output"| OpenAIClient
+    AgentLayer -->|"Fallback on RateLimit/Error"| LocalAgent
+    OpenAIClient -.->|"Tool Calling"| ToolLayer
+    LocalAgent -->|"Direct Tool Invocation"| ToolLayer
 
-    LLM -->|"Load facts"| ClinicInfo
-    LLM -->|"Ask assistant (with fallback & retry)"| OpenAI
-    OpenAI -->|"JSON (reply, intent, source, reason)"| LLM
-    LLM --> Router
+    %% Data Connections
+    T_Info -->|"Query facts"| ClinicFacts
+    T_Status -->|"Search booking"| BookingsCSV
+    T_Update -->|"Update status"| BookingEngine
+    T_Book -->|"Create appointment"| BookingEngine
+    T_Dates -->|"Check slots"| BookingEngine
 
-    Router --> Bookings
-    Bookings -->|"Validate, check capacity & duplicate"| BookingsCSV
-    BookingsCSV -->|"Append accepted booking (B+id)"| Bookings
+    Router --> BookingEngine
+    BookingEngine --> Validator
+    Validator --> CapacityMgr
+    CapacityMgr --> LockMgr
+    LockMgr -->|"Append / Update record"| BookingsCSV
 ```
 
 ---
 
-## Features
+## Key Features
 
-- **Strict Clinic FAQ Answering**: Answers only from facts defined in `data/clinic_info.md`.
-- **Zero Medical Advice Policy**: Politely declines all diagnostic, dosage, or medical treatment questions and redirects patients to consult a clinician.
-- **Deterministic Emergency Interceptor**: Hardcoded regex keyword detection for critical emergencies (`chest pain`, `can't breathe`, `stroke`, etc.) returning immediate emergency warnings without calling OpenAI.
-- **Automated Booking Request Workflow**: Detects booking intentions from chat or interactive UI buttons, validates dates and contact details, checks daily capacity, and records accepted appointments to `data/bookings.csv`.
-- **Design & Accessibility**: Built with DM Sans typography, responsive layout, clear focus indicators, smooth animations with `prefers-reduced-motion` support, and zero `innerHTML` usage for XSS safety.
+### 1. Dual-Engine Intelligent Assistant
+- **Primary Engine**: Uses OpenAI Chat Completions with structured Pydantic output schemas (`reply`, `intent`, `source`, `booking_reason`).
+- **Autonomous Tool-Calling Fallback**: When OpenAI API limits or connection errors occur, the autonomous agent takes over seamlessly, using tools to fetch facts from `data/clinic_info.md` and query/update `data/bookings.csv`.
+- **Direct Chat Booking**: Patients can schedule appointments directly through conversational chat (e.g. *"Book for John Doe on 2026-11-20 for check-up"*).
+- **Status Inquiry & Cancellation**: Patients can check status (e.g. *"Check status of B1001"*) or request cancellation (e.g. *"Cancel booking B1001"*) via natural language.
+
+### 2. Clinical Safety & Medical Ethics
+- **Zero Medical Advice Policy**: Rejects requests for medical diagnosis, prescriptions, dosage, and treatment, directing patients to consult licensed clinicians.
+- **Deterministic Emergency Interceptor**: Hardcoded regex keyword detection for critical symptoms (`chest pain`, `can't breathe`, `severe bleeding`, `stroke`) immediately returns emergency emergency instructions (`8785415621`), bypassing the LLM entirely.
+- **Strict FAQ Grounding**: General questions (hours, address, preparation, services) are answered strictly from `data/clinic_info.md`.
+
+### 3. Automated Appointment Booking Workflow
+- **Interactive Modal**: The booking section opens cleanly in an accessible modal dialog when clicking *"Request appointment"* (nav, hero, doctor cards, or chat suggestion chip).
+- **Hidden Background Processing**: Fields like `Booking ID` (auto-incremented), `Status` (defaulted to `Accepted`), and `Created At` (ISO timestamp) are processed in the background, keeping the user interface simple and uncluttered.
+- **Strict Business Rules**:
+  - Closed on weekends (Monday through Friday only).
+  - Enforces daily capacity (`DAILY_CAPACITY = 8`).
+  - Next available open date suggestions on capacity full (`HTTP 409`).
+  - Duplicate booking prevention for identical phone and date combinations.
+  - Sanitization against CSV formula injection (`=`, `+`, `-`, `@`).
+
+### 4. Interactive Medical Team Showcase
+- **Infinite Marquee Animation**: Smooth CSS continuous left-scrolling animation featuring doctor profiles with custom vector avatars, qualifications, specialties, star ratings (`★★★★★ 4.9`), review counts, and experience badges.
+- **Interactive Booking**: Each doctor card includes a *"Request Appointment"* button that pre-populates the booking modal.
+- **Pause on Hover**: Hovering over any doctor card pauses the marquee for easy reading.
 
 ---
 
 ## Tech Stack
 
-- **Backend**: Python 3.11+, FastAPI, Uvicorn, Pydantic v2, official `openai` Python SDK (v3.42.1+), `python-dotenv`.
-- **Frontend**: Plain HTML5, CSS3, JavaScript (ES6+), DM Sans (Google Fonts with system fallback), no build steps or npm packages.
-- **Testing**: `pytest`, `pytest-asyncio`, `httpx`.
+| Layer | Technologies |
+|---|---|
+| **Backend** | Python 3.11+, FastAPI, Uvicorn, Pydantic v2, `python-dotenv` |
+| **AI / Agent** | Official `openai` SDK (Structured Outputs & Tool Calling), Autonomous Fallback Agent |
+| **Frontend** | Vanilla HTML5, Modern CSS3 (Grid, Flexbox, Keyframe Animations), Vanilla ES6+ JavaScript |
+| **Data Storage** | Thread-safe CSV (`data/bookings.csv`), Markdown Knowledge Base (`data/clinic_info.md`) |
+| **Testing** | `pytest`, `pytest-asyncio`, `httpx`, `unittest.mock` |
 
 ---
 
-## Setup Instructions
+## Directory Structure
+
+```text
+├── app/
+│   ├── __init__.py
+│   ├── config.py           # Clinic metadata, environment variables & paths
+│   ├── bookings.py         # Thread-safe booking engine & CSV mutex lock
+│   ├── tools.py            # Agent tools (clinic facts retriever, CSV search/update)
+│   ├── llm.py              # OpenAI client, agent tools runner & system prompts
+│   ├── safety.py           # Deterministic emergency regex interceptor
+│   ├── schemas.py          # Pydantic request & response models
+│   └── main.py             # FastAPI REST endpoints & static file hosting
+├── data/
+│   ├── clinic_info.md      # Ground truth knowledge base (hours, location, services)
+│   └── bookings.csv        # Appointments CSV data store
+├── tests/
+│   ├── test_api.py         # REST API endpoint unit & integration tests
+│   ├── test_bookings.py    # Booking validation, capacity & thread safety tests
+│   ├── test_chat_llm.py    # LLM structured output & agent tools tests
+│   └── test_safety.py      # Emergency keyword detector tests
+├── web/
+│   ├── index.html          # Semantic HTML5 single-page application
+│   ├── styles.css          # Responsive design, CSS animations & modal styling
+│   └── app.js              # DOM logic, modal management, chat & API calls
+├── logs/
+│   └── app.log             # Rotating application logger
+├── requirements.txt        # Python dependency manifest
+├── pytest.ini              # Pytest configuration
+├── PROMPTS.md              # AI system prompt version documentation
+└── README.md               # Project documentation
+```
+
+---
+
+## REST API Specification
+
+| Method | Endpoint | Description |
+|---|---|---|
+| `GET` | `/api/config` | Retrieves clinic configuration (hours, phone, address, emergency number). |
+| `POST` | `/api/chat` | AI chat endpoint with safety checks, tool calling, and FAQ retrieval. |
+| `GET` | `/api/bookings` | Returns all appointment records from `bookings.csv`. |
+| `POST` | `/api/bookings` | Creates or updates an appointment booking in `bookings.csv`. |
+| `PUT` | `/api/bookings/{id}` | Updates an existing appointment booking by ID in `bookings.csv`. |
+
+---
+
+## Installation & Setup
 
 ### 1. Prerequisites
-- Python 3.11 or later installed.
-- Git (optional).
+- **Python 3.11** or later installed.
+- **Git** installed.
 
-### 2. Virtual Environment
+### 2. Clone the Repository
 ```bash
-python -m venv venv
+git clone https://github.com/<your-username>/<your-repo-name>.git
+cd <your-repo-name>
+```
 
+### 3. Create and Activate Virtual Environment
+```bash
 # On Windows:
-venv\Scripts\activate
+python -m venv venv
+.\venv\Scripts\activate
 
-# On Linux/macOS:
+# On Linux / macOS:
+python3 -m venv venv
 source venv/bin/activate
 ```
 
-### 3. Install Dependencies
+### 4. Install Dependencies
 ```bash
 pip install -r requirements.txt
 ```
 
-### 4. Configure Environment
-Copy the example environment file and add your OpenAI API key:
-```bash
-cp .env.example .env
-```
-Edit `.env`:
+### 5. Configure Environment Variables
+Create a `.env` file in the root directory:
 ```env
-OPENAI_API_KEY=sk-...your-key...
+OPENAI_API_KEY=sk-...your-openai-api-key...
 OPENAI_MODEL=gpt-4o-mini
+CLINIC_NAME=WELL Care
 ```
+*(Note: If no OpenAI API key is supplied or if credits are exhausted, the built-in autonomous agent handles all clinic queries and booking requests locally without disruption).*
 
 ---
 
 ## Running the Application
 
-Start the local server with Uvicorn:
+Start the FastAPI development server:
 ```bash
 uvicorn app.main:app --reload
 ```
-Open your browser and navigate to:
-- **Website & Chat**: [http://localhost:8000/](http://localhost:8000/)
-- **Interactive OpenAPI Docs**: [http://localhost:8000/docs](http://localhost:8000/docs)
+
+Access the interfaces in your browser:
+- **Clinic Website**: [http://localhost:8000/](http://localhost:8000/)
+- **Interactive Swagger API Docs**: [http://localhost:8000/docs](http://localhost:8000/docs)
+- **Alternative ReDoc**: [http://localhost:8000/redoc](http://localhost:8000/redoc)
 
 ---
 
-## Running Tests
+## Running Automated Tests
 
-Run the full automated test suite with pytest:
+Run the full automated test suite (45 unit and integration tests):
 ```bash
 pytest -v
 ```
 
-All tests mock external API calls and use isolated temporary copies of `bookings.csv`.
+All test cases run in isolation using temporary mock copies of `bookings.csv` and mocked OpenAI calls.
 
 ---
 
-## How Booking Acceptance Works
+## Booking CSV Format
 
-When a booking request is submitted (via `POST /api/bookings` or through the interactive in-chat booking card):
-1. **Format Validation**:
-   - `name`: Must be between 2 and 80 characters.
-   - `phone`: Must be 7 to 20 characters matching valid phone patterns (`+`, `-`, `()`, spaces, digits).
-   - `preferred_date`: Must be a valid date in `YYYY-MM-DD` format.
-2. **Date Rules**:
-   - Must be today or a future date.
-   - Cannot exceed `MAX_DAYS_AHEAD` (default 60 days).
-   - Must be an open weekday (Monday through Friday). Closed on weekends.
-3. **Duplicate Prevention**:
-   - Rejects the request with HTTP `409 Conflict` if an accepted appointment already exists with the same normalized phone number on that date.
-4. **Capacity Enforcement**:
-   - Counts existing records on that date with status `Accepted` (cancelled bookings do not count).
-   - If accepted bookings have reached `DAILY_CAPACITY` (default 8), the request is rejected with HTTP `409 Conflict` and returns the next 3 available open dates.
-5. **Acceptance & Thread-Safe Append**:
-   - Under a file mutex lock (`csv_lock`), assigns the next incremental ID (e.g. `B1021`), sanitises inputs against CSV formula injection (`=`, `+`, `-`, `@`), and appends the row with status `Accepted` and ISO timestamp to `data/bookings.csv`.
+The appointment schedule is persisted in `data/bookings.csv` with the following columns:
 
----
+```csv
+booking_id,name,phone,preferred_date,reason,status,created_at
+B1001,Aisha Khan,+1-555-0101,2026-11-04,General check-up,Accepted,2026-11-01T09:12:00
+B1002,Daniel Moore,+1-555-0102,2026-11-04,Flu shot,Accepted,2026-11-01T10:40:00
+```
 
-## Limitations
-
-- **CSV Data Storage**: Bookings are stored in a local flat CSV file (`data/bookings.csv`). While thread-safe via in-process locks, this is intended for single-instance clinic deployments rather than distributed multi-server clusters.
-- **Single Process / Server**: In-memory rate limiting and file locking are bound to the running Python process.
-- **No Patient Authentication**: Bookings are identified by patient phone number and booking ID; no user accounts or passwords are implemented.
-- **Placeholder Details**: Operational clinic details in `data/clinic_info.md` contain bracketed placeholders (`[Clinic name]`, `[hours]`, `[Phone number]`, etc.) to be populated by the clinic administrator.
+- **`booking_id`**: Incremental sequential identifier (`B1001`, `B1002`, ...).
+- **`name`**: Patient full name (sanitized against formula injection).
+- **`phone`**: Validated phone number.
+- **`preferred_date`**: Appointment date (`YYYY-MM-DD`, weekday only).
+- **`reason`**: Purpose of visit (optional).
+- **`status`**: Current booking status (`Accepted`, `Pending`, `Cancelled`).
+- **`created_at`**: ISO timestamp of record creation.
 
 ---
 
-## Screenshots
+## License
 
-- **Hero & Chat Interface**: `screenshots/01-hero-chat-desktop.png`
-- **FAQ Answer with Source Citation**: `screenshots/02-faq-source-citation.png`
-- **Appointment Request Card**: `screenshots/03-appointment-card-inline.png`
-- **Capacity Rejection with Alternative Dates**: `screenshots/04-capacity-rejection-dates.png`
-- **Mobile Responsive View**: `screenshots/05-mobile-responsive.png`
+This project is licensed under the MIT License.

@@ -59,7 +59,7 @@ def get_clinic_details() -> dict:
         if emerg_match:
             emergency_number = emerg_match.group(1).strip()
 
-    clinic_name = os.getenv("CLINIC_NAME") or first_line or "WELL Care"
+    clinic_name = os.getenv("CLINIC_NAME") or first_line or "WellCare"
     return {
         "clinic_name": clinic_name,
         "hours": f"Monday to Friday, {hours}",

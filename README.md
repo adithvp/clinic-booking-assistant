@@ -1,4 +1,4 @@
-# WELL Care Clinic Website & AI Assistant
+# WellCare Clinic Website & AI Assistant
 
 A production-ready, safety-first web application for primary care clinics. Combines a modern responsive frontend with a FastAPI backend featuring dual-mode AI assistance (OpenAI Structured Outputs + Autonomous Tool-Calling Agent), an automated appointment booking system with thread-safe CSV persistence, and an animated medical team showcase.
 
@@ -202,7 +202,7 @@ Create a `.env` file in the root directory:
 ```env
 OPENAI_API_KEY=sk-...your-openai-api-key...
 OPENAI_MODEL=gpt-4o-mini
-CLINIC_NAME=WELL Care
+CLINIC_NAME=WellCare
 ```
 *(Note: If no OpenAI API key is supplied or if credits are exhausted, the built-in autonomous agent handles all clinic queries and booking requests locally without disruption).*
 

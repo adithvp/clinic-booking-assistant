@@ -42,7 +42,7 @@
 
   // Configuration state
   let clinicConfig = {
-    clinic_name: 'WELL Care',
+    clinic_name: 'WellCare',
     hours: 'Monday to Friday, 7 AM to 8 PM',
     address: 'Bangalore',
     phone: '674-252-024',

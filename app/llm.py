@@ -64,7 +64,7 @@ def build_system_prompt() -> str:
     details = get_clinic_details()
     clinic_info = get_clinic_info_text()
     return SYSTEM_PROMPT_TEMPLATE.format(
-        clinic_name=details.get("clinic_name", "WELL Care"),
+        clinic_name=details.get("clinic_name", "WellCare"),
         clinic_info=clinic_info,
         phone=details.get("phone", "674-252-024"),
         emergency_number=details.get("emergency_number", "8785415621"),

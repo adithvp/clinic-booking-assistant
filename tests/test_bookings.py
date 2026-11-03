@@ -19,9 +19,11 @@ from app.config import BOOKINGS_CSV_PATH
 
 @pytest.fixture
 def temp_bookings_csv(tmp_path: Path):
-    """Creates a temporary copy of data/bookings.csv for isolated testing."""
+    """Creates a temporary copy of the 20 canonical seed rows for isolated testing."""
     test_csv = tmp_path / "bookings.csv"
-    shutil.copyfile(BOOKINGS_CSV_PATH, test_csv)
+    lines = BOOKINGS_CSV_PATH.read_text(encoding="utf-8").splitlines()
+    seed_lines = [l for l in lines[:21] if l.strip()]
+    test_csv.write_text("\n".join(seed_lines) + "\n", encoding="utf-8")
     return test_csv
 
 

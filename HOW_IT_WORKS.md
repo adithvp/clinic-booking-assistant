@@ -1,4 +1,4 @@
-# How This Project Works: End-to-End Technical Guide
+# WellCare: End-to-End Technical Guide
 
 This document explains **exactly how this project functions from the ground up**, covering the user experience, frontend code, backend server, AI/agent logic, and data storage.
 
@@ -36,7 +36,7 @@ The project has three main layers:
 ### Frontend (`web/`)
 
 #### 1. `web/index.html` (The Webpage Skeleton)
-- **Top Navigation**: Clinic logo ("WELL Care"), links to sections (`Services`, `Our team`, `Visit info`, `Contact`), and the primary `"Request appointment"` button.
+- **Top Navigation**: Clinic logo ("WellCare"), links to sections (`Services`, `Our team`, `Visit info`, `Contact`), and the primary `"Request appointment"` button.
 - **Hero Section**:
   - Left column: Headline, summary, action buttons, and a live information row showing **Hours (Monday to Friday, 7 AM to 8 PM)**, **Address (Bangalore)**, and **Phone (674-252-024)**.
   - Right column: The embedded **AI Clinic Assistant Chat Widget**.

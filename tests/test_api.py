@@ -28,9 +28,11 @@ from app.schemas import (
 
 @pytest.fixture
 def temp_csv_path(tmp_path: Path, monkeypatch):
-    """Sets up a temporary bookings CSV."""
+    """Sets up a temporary bookings CSV with the canonical seed rows."""
     test_csv = tmp_path / "bookings.csv"
-    shutil.copyfile(BOOKINGS_CSV_PATH, test_csv)
+    lines = BOOKINGS_CSV_PATH.read_text(encoding="utf-8").splitlines()
+    seed_lines = [l for l in lines[:21] if l.strip()]
+    test_csv.write_text("\n".join(seed_lines) + "\n", encoding="utf-8")
     monkeypatch.setattr("app.bookings.BOOKINGS_CSV_PATH", test_csv)
     monkeypatch.setattr("app.config.BOOKINGS_CSV_PATH", test_csv)
     return test_csv

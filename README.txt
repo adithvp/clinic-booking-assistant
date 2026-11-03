@@ -1,11 +1,11 @@
 ========================================================================
-             WELL CARE CLINIC WEBSITE & AI ASSISTANT
+             WELLCARE CLINIC WEBSITE & AI ASSISTANT
                   Beginner-Friendly Project Guide
 ========================================================================
 
 1. WHAT IS THIS PROJECT?
 ------------------------
-This is a complete website for a medical clinic called "WELL Care".
+This is a complete website for a medical clinic called "WellCare".
 It has three main features:
 
   A. A Modern Clinic Website:

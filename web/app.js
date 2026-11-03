@@ -446,6 +446,13 @@
   }
   bindDoctorButtons();
 
+  // Additional section booking buttons (Visit Guide, Footer)
+  document.querySelectorAll('.btn-visit-book, .btn-footer-book').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      openBookingModal();
+    });
+  });
+
   function showBookingFeedback(type, text, altDates = []) {
     if (!bookingFeedbackMsg) return;
     bookingFeedbackMsg.className = `booking-feedback feedback-${type}`;

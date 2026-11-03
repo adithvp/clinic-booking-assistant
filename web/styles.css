@@ -566,6 +566,116 @@ body {
   color: var(--muted);
 }
 
+/* Section Header Wrap (Shared across sections) */
+.section-header-wrap {
+  padding: 0 64px;
+  max-width: 1440px;
+  margin: 0 auto 28px;
+}
+
+.section-heading-title {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--ink);
+  letter-spacing: -0.02em;
+  margin: 6px 0 10px;
+}
+
+.section-heading-desc {
+  font-size: 16px;
+  color: var(--muted);
+  max-width: 720px;
+  line-height: 1.6;
+}
+
+/* Facilities Section */
+.facilities-section {
+  padding: 24px 0 64px;
+  max-width: 1440px;
+  margin: 0 auto;
+}
+
+.facilities-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  padding: 0 64px;
+}
+
+.facility-card {
+  background-color: var(--card-white);
+  border: 1px solid var(--borders);
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(18, 48, 43, 0.05);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.facility-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--accent);
+  box-shadow: 0 14px 30px rgba(31, 122, 107, 0.12);
+}
+
+.facility-image-wrap {
+  position: relative;
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+  background-color: var(--assistant-bubble);
+}
+
+.facility-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.35s ease;
+}
+
+.facility-card:hover .facility-img {
+  transform: scale(1.05);
+}
+
+.facility-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background-color: rgba(18, 48, 43, 0.85);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  color: #FFFFFF;
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 12px;
+  letter-spacing: 0.02em;
+}
+
+.facility-content {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.facility-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 8px;
+  line-height: 1.35;
+}
+
+.facility-desc {
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.55;
+  margin: 0;
+}
+
 /* Doctors Section */
 .doctors-section {
   padding: 0 0 72px;
@@ -739,6 +849,422 @@ body {
   background-color: var(--accent);
   color: #FFFFFF;
   border-color: var(--accent);
+}
+
+/* Visit Information Section */
+.visit-info-section {
+  padding: 32px 0 72px;
+  max-width: 1440px;
+  margin: 0 auto;
+}
+
+.visit-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.15fr;
+  gap: 48px;
+  padding: 0 64px;
+  align-items: center;
+}
+
+.visit-image-card {
+  position: relative;
+  border-radius: 24px;
+  overflow: hidden;
+  border: 1px solid var(--borders);
+  box-shadow: 0 12px 36px rgba(18, 48, 43, 0.08);
+  height: 480px;
+  background-color: var(--assistant-bubble);
+}
+
+.visit-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.visit-floating-badge {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  right: 20px;
+  background-color: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  padding: 12px 18px;
+  border-radius: 14px;
+  box-shadow: 0 8px 24px rgba(18, 48, 43, 0.12);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+  border: 1px solid rgba(227, 232, 229, 0.8);
+}
+
+.badge-dot {
+  width: 10px;
+  height: 10px;
+  background-color: #34A853;
+  border-radius: 50%;
+  display: inline-block;
+  box-shadow: 0 0 0 3px rgba(52, 168, 83, 0.2);
+}
+
+.visit-steps-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.visit-step-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 18px;
+  background-color: var(--card-white);
+  border: 1px solid var(--borders);
+  border-radius: 16px;
+  padding: 18px 20px;
+  box-shadow: 0 2px 10px rgba(18, 48, 43, 0.03);
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.visit-step-item:hover {
+  transform: translateX(4px);
+  border-color: var(--accent);
+}
+
+.step-num {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--accent);
+  background-color: var(--accent-soft);
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.step-content {
+  flex: 1;
+}
+
+.step-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 4px;
+}
+
+.step-desc {
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.visit-cta-wrap {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 10px;
+}
+
+.btn-visit-book {
+  min-height: 44px;
+  padding: 10px 24px;
+  font-size: 15px;
+}
+
+.visit-cta-subtext {
+  font-size: 13.5px;
+  color: var(--muted);
+}
+
+/* Contact & Campus Section */
+.contact-section {
+  padding: 32px 0 84px;
+  max-width: 1440px;
+  margin: 0 auto;
+}
+
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: 40px;
+  padding: 0 64px;
+  align-items: stretch;
+}
+
+.contact-exterior-card {
+  position: relative;
+  border-radius: 24px;
+  overflow: hidden;
+  border: 1px solid var(--borders);
+  box-shadow: 0 12px 36px rgba(18, 48, 43, 0.08);
+  min-height: 440px;
+  background-color: var(--assistant-bubble);
+}
+
+.contact-exterior-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.contact-exterior-overlay {
+  position: absolute;
+  top: 18px;
+  left: 18px;
+}
+
+.campus-status-pill {
+  background-color: rgba(18, 48, 43, 0.88);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  color: #FFFFFF;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 20px;
+  display: inline-block;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.contact-cards-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  justify-content: center;
+}
+
+.contact-info-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  background-color: var(--card-white);
+  border: 1px solid var(--borders);
+  border-radius: 18px;
+  padding: 20px;
+  box-shadow: 0 4px 14px rgba(18, 48, 43, 0.04);
+}
+
+.contact-card-highlight {
+  border-color: rgba(31, 122, 107, 0.4);
+  background-color: #F8FCFB;
+}
+
+.contact-icon-box {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background-color: var(--accent-soft);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.contact-card-body {
+  flex: 1;
+}
+
+.contact-card-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 6px;
+}
+
+.contact-card-text {
+  font-size: 14.5px;
+  color: var(--muted);
+  line-height: 1.55;
+  margin: 0;
+}
+
+.contact-card-sub {
+  display: inline-block;
+  font-size: 12.5px;
+  color: var(--accent);
+  margin-top: 4px;
+  font-weight: 500;
+}
+
+.contact-tel-link {
+  color: var(--accent);
+  text-decoration: underline;
+  font-weight: 600;
+}
+
+.emergency-num {
+  color: var(--error);
+  font-weight: 700;
+}
+
+.contact-mail {
+  color: var(--ink);
+  font-weight: 500;
+}
+
+/* Site Footer */
+.site-footer {
+  background-color: #0E2420;
+  color: #D3E0DC;
+  padding: 64px 0 32px;
+  margin-top: 40px;
+}
+
+.footer-container {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 64px;
+}
+
+.footer-main-grid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr 1.3fr;
+  gap: 40px;
+  padding-bottom: 48px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.footer-col-brand .footer-logo {
+  margin-bottom: 14px;
+}
+
+.footer-logo .nav-clinic-name {
+  color: #FFFFFF;
+}
+
+.footer-mission {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #A0B5AE;
+  margin-bottom: 18px;
+  max-width: 340px;
+}
+
+.footer-badge {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 600;
+  background-color: rgba(31, 122, 107, 0.35);
+  color: #A3E2D8;
+  padding: 4px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(163, 226, 216, 0.25);
+}
+
+.footer-col-heading {
+  font-size: 15px;
+  font-weight: 700;
+  color: #FFFFFF;
+  margin-bottom: 16px;
+  letter-spacing: 0.01em;
+}
+
+.footer-links-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.footer-link {
+  color: #A0B5AE;
+  font-size: 14px;
+  text-decoration: none;
+  transition: color 0.15s ease, transform 0.15s ease;
+  display: inline-block;
+}
+
+.footer-link:hover {
+  color: #FFFFFF;
+  transform: translateX(3px);
+}
+
+.footer-text {
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: #A0B5AE;
+  margin-bottom: 12px;
+}
+
+.footer-text strong {
+  color: #FFFFFF;
+}
+
+.btn-footer-book {
+  border-color: rgba(255, 255, 255, 0.3);
+  color: #FFFFFF;
+  margin-top: 8px;
+}
+
+.btn-footer-book:hover {
+  background-color: var(--accent);
+  border-color: var(--accent);
+}
+
+.emergency-alert-card {
+  background-color: rgba(217, 48, 37, 0.12);
+  border: 1px solid rgba(217, 48, 37, 0.3);
+  border-radius: 14px;
+  padding: 16px;
+}
+
+.emergency-alert-text {
+  font-size: 13px;
+  line-height: 1.45;
+  color: #FFCDD2;
+  margin-bottom: 12px;
+}
+
+.emergency-call-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #D93025;
+  color: #FFFFFF;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 15px;
+  padding: 8px 16px;
+  border-radius: 10px;
+  transition: background-color 0.15s ease;
+  margin-bottom: 8px;
+}
+
+.emergency-call-btn:hover {
+  background-color: #B3261E;
+}
+
+.emergency-note {
+  display: block;
+  font-size: 11.5px;
+  color: #E0AEAC;
+}
+
+.footer-bottom-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 28px;
+  font-size: 13px;
+  color: #7A948C;
+}
+
+.footer-bottom-links {
+  display: flex;
+  gap: 12px;
 }
 
 /* Modal Overlay & Dialog */
@@ -919,12 +1445,82 @@ body {
     grid-template-columns: 1fr;
   }
 
-  .booking-section {
-    padding: 0 20px 60px;
+  .section-header-wrap,
+  .doctors-section-header {
+    padding: 0 20px;
   }
 
-  .form-grid {
+  .facilities-section {
+    padding: 24px 0 48px;
+  }
+
+  .facilities-grid {
+    grid-template-columns: repeat(2, 1fr);
+    padding: 0 20px;
+    gap: 16px;
+  }
+
+  .visit-info-section {
+    padding: 24px 0 48px;
+  }
+
+  .visit-grid {
     grid-template-columns: 1fr;
+    padding: 0 20px;
+    gap: 28px;
+  }
+
+  .visit-image-card {
+    height: 320px;
+  }
+
+  .contact-section {
+    padding: 24px 0 56px;
+  }
+
+  .contact-grid {
+    grid-template-columns: 1fr;
+    padding: 0 20px;
+    gap: 24px;
+  }
+
+  .contact-exterior-card {
+    min-height: 280px;
+    height: 280px;
+  }
+
+  .footer-container {
+    padding: 0 20px;
+  }
+
+  .footer-main-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+  }
+
+  .footer-bottom-bar {
+    flex-direction: column;
+    gap: 12px;
+    text-align: center;
+  }
+
+  .modal-form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .facilities-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .footer-main-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .visit-cta-wrap {
+    flex-direction: column;
+    align-items: stretch;
   }
 }
 
